@@ -200,7 +200,8 @@ An error occurred (ValidationException) when calling the PutItem operation: One 
 ```zsh
 % aws dynamodb query --table-name MusicCollection \
     --key-condition-expression "Artist = :v1 AND SongTitle = :v2" \
-    --expression-attribute-values file://expression-attributes.json
+    --expression-attribute-values file://expression-attributes.json \
+    --return-consumed-capacity TOTAL
 {
     "Items": [
         {
@@ -217,7 +218,10 @@ An error occurred (ValidationException) when calling the PutItem operation: One 
     ],
     "Count": 1,
     "ScannedCount": 1,
-    "ConsumedCapacity": null
+    "ConsumedCapacity": {
+        "TableName": "MusicCollection",
+        "CapacityUnits": 0.5
+    }
 }
 ```
 
@@ -226,7 +230,8 @@ An error occurred (ValidationException) when calling the PutItem operation: One 
 `scan` 은 `query`보다 단순하게 데이터를 읽어오는데, DynamoDB는 1MB 까지만 데이터를 반환해준다. 그 이상을 Scan 하려면 pagination을 통해 데이터를 읽을 수 있다. ([Paginating the Result](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Scan.html#Scan.Pagination))
 
 ```zsh
-% aws dynamodb scan --table-name MusicCollection
+% aws dynamodb scan --table-name MusicCollection \
+    --return-consumed-capacity TOTAL
 {
     "Items": [
         {
@@ -265,7 +270,10 @@ An error occurred (ValidationException) when calling the PutItem operation: One 
     ],
     "Count": 3,
     "ScannedCount": 3,
-    "ConsumedCapacity": null
+    "ConsumedCapacity": {
+        "TableName": "MusicCollection",
+        "CapacityUnits": 0.5
+    }
 }
 ```
 
@@ -275,7 +283,8 @@ An error occurred (ValidationException) when calling the PutItem operation: One 
 
 ```zsh
 % aws dynamodb get-item --table-name MusicCollection \
-    --key file://get-item-key.json
+    --key file://get-item-key.json \
+    --return-consumed-capacity TOTAL
 {
     "Item": {
         "AlbumTitle": {
@@ -287,6 +296,10 @@ An error occurred (ValidationException) when calling the PutItem operation: One 
         "SongTitle": {
             "S": "Call Me Today"
         }
+    },
+    "ConsumedCapacity": {
+        "TableName": "MusicCollection",
+        "CapacityUnits": 0.5
     }
 }
 ```
