@@ -63,9 +63,13 @@ Command Line 에 아래 내용을 입력해본다.
 테이블은 `create-table`명령을 통해 생성한다.
 
 문서에 있는 예제는 `MusicCollection`이라는 이름으로 테이블을 생성하는 예제이다.
-`--attribute-definitions`를 통해 저장되는 문서의 속성을 지정하는데, `AttributeName`, `AttributeType` 을 통해 해당 속성의 이름과 타입을 지정한다.
-`--key-schema`를 통해 테이블의 인덱스를 지정할 수 있는데, `AttributeName`으로 어떤 속성을 인덱스로 사용할지, `KeyType`으로 인덱스를 어떤 방식으로 사용할지 지정한다.
-`--provisioned-throughput`을 통해 Provision 모드로 설정하고 `ReadCapacityUnits`와 `WriteCapacityUnits`를 통해 초당 수행 가능한 요청수를 미리 설정한다.
+
+* `--attribute-definitions`를 통해 저장되는 문서의 속성 지정
+  * `AttributeName`, `AttributeType` 을 통해 해당 속성의 이름과 타입 지정
+* `--key-schema`를 통해 테이블의 인덱스 지정 가능
+  * `AttributeName`으로 어떤 속성을 인덱스로 사용할지, `KeyType`으로 인덱스를 어떤 방식으로 사용할지 지정
+* `--provisioned-throughput`을 통해 Provision 모드로 설정
+  * `ReadCapacityUnits`와 `WriteCapacityUnits`를 통해 초당 수행 가능한 요청수 미리 설정
 
 ```zsh
 % aws dynamodb create-table \
@@ -115,7 +119,9 @@ Command Line 에 아래 내용을 입력해본다.
 
 데이터는 `put-item` 명령어를 통해 추가한다.
 여기서는 두번 데이터를 추가하는데, `--return-consumed-capacity` 를 통해 `ConsumedCapacity`를 반환하도록 설정했다.
-`--table-name`으로 대상 테이블을 지정하고 `--item`으로 추가할 데이터를 정해준다.
+
+* `--table-name`으로 대상 테이블을 지정
+* `--item`으로 추가할 데이터 지정
 
 ```zsh
 % aws dynamodb put-item \
@@ -385,6 +391,10 @@ An error occurred (ValidationException) when calling the PutItem operation: One 
     "TableNames": []
 }
 ```
+
+AWS의 대표적인 서비스인 DynamoDB를 CLI를 통해 간단히 이용해보았다.
+AWS의 서비스들은 REST API를 지원하고, AWS SDK가 해당 API의 호출을 감싸는 구조로 설계되어 있다.
+따라서 CLI에서 어떤 기능을 지원하는지 알면, 특정 언어에서 어떤 키워드를 통해 API호출을 구성하고 있을지 예측하기 좋다.
 
 ## References
 
