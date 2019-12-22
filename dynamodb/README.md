@@ -385,3 +385,8 @@ An error occurred (ValidationException) when calling the PutItem operation: One 
     "TableNames": []
 }
 ```
+
+## References
+
+[AWS CLI Reference](https://docs.aws.amazon.com/cli/latest/reference/dynamodb/index.html#cli-aws-dynamodb)
+[Amazon DynamoDB Developer Guide](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Introduction.html)
