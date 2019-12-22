@@ -322,4 +322,56 @@ An error occurred (ValidationException) when calling the PutItem operation: One 
 
 ## 데이터 삭제
 
+`delete-item` 명령어로 `--key`와 일치하는 데이터를 삭제할 수 있다. 여기서도 파일을 통해 item을 지정해본다.
+
+```json
+// delete-item-key.json
+{
+  "Artist": {"S": "Acme Band"},
+  "SongTitle": {"S": "Happy Day"}
+}
+```
+
+```zsh
+% aws dynamodb delete-item --table-name MusicCollection \
+    --key file://delete-item-key.json \
+    --return-consumed-capacity TOTAL
+{
+    "ConsumedCapacity": {
+        "TableName": "MusicCollection",
+        "CapacityUnits": 1.0
+    }
+}
+```
+
 ## 테이블 삭제
+
+`delete-table`을 통해 테이블을 삭제할 수 있다.
+
+```zsh
+% aws dynamodb delete-table --table-name MusicCollection
+{
+    "TableDescription": {
+        "TableName": "MusicCollection",
+        "TableStatus": "DELETING",
+        "ProvisionedThroughput": {
+            "NumberOfDecreasesToday": 0,
+            "ReadCapacityUnits": 1,
+            "WriteCapacityUnits": 1
+        },
+        "TableSizeBytes": 0,
+        "ItemCount": 0,
+        "TableArn": "arn:aws:dynamodb:eu-north-1:079570973980:table/MusicCollection",
+        "TableId": "b0025823-4614-464e-8180-1fa15abe8eff"
+    }
+}
+```
+
+테이블 삭제 여부 확인
+
+```zsh
+% aws dynamodb list-tables
+{
+    "TableNames": []
+}
+```
