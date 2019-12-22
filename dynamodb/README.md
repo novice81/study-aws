@@ -147,7 +147,7 @@ Command Line 에 아래 내용을 입력해본다.
     }
 }
 ```
-전달되는 데이터에는 key로 사용하기로 한 속성들이 반드시 존재해야 한다. 이런 경우 어떤 key 가 문제인지 친절하게 에러메시지에 표시해 준다.
+전달되는 데이터에는 key로 사용하기로 한 속성들이 반드시 존재해야 한다. 이런 경우 어떤 key가 문제인지 친절하게 에러메시지에 표시해 준다.
 > Missing the key *Artist* in the item
 ```zsh
 % aws dynamodb put-item \
@@ -195,7 +195,16 @@ An error occurred (ValidationException) when calling the PutItem operation: One 
 
 ### query
 
-예제에서는 `query` 명령어를 다루고 있다. 이 명령어는 일종의 질의 문법을 제공하는데, [간단한 예제들](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/SQLtoNoSQL.ReadData.Query.html)을 읽어보면 간단한 질의문을 만들 수 있고, [심화 버전](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Query.html)에서는 좀더 자세한 질의 문법을 다룬다.
+예제에서는 `query` 명령어를 다루고 있다. 이 명령어는 일종의 질의 문법을 제공하는데, [예제](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/SQLtoNoSQL.ReadData.Query.html)들을 읽어보면 간단한 질의문을 만들 수 있고, [심화 버전](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Query.html)에서는 좀더 자세한 질의 문법을 다룬다.
+
+직접 json 내용을 입력하는 대신, `expression-attributes.json` 파일을 통해 값을 CLI로 전달하고 있다.
+```json
+// expression-attributes.json
+{
+  ":v1": {"S": "No One You Know"},
+  ":v2": {"S": "Call Me Today"}
+}
+```
 
 ```zsh
 % aws dynamodb query --table-name MusicCollection \
@@ -279,7 +288,14 @@ An error occurred (ValidationException) when calling the PutItem operation: One 
 
 ### get-item
 
-`get-item`은 `--key`를 통해 일치되는 데이터를 읽어온다.
+`get-item`은 `--key`를 통해 key가 일치하는 데이터를 가져온다.
+```json
+// get-item-key.json
+{
+  "Artist": {"S": "No One You Know"},
+  "SongTitle": {"S": "Call Me Today"}
+}
+```
 
 ```zsh
 % aws dynamodb get-item --table-name MusicCollection \
