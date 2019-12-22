@@ -10,7 +10,7 @@ On-Demand 모드와 Provision 모드를 지원하는데, 둘의 가장 큰 차�
 On-Demand 모드는 요청 Capacity당 과금이 책정되는 반면, Provision 모드는 미리 설정한 Capacity 기준으로 과금이 된다.
 이와 관련하여 Provision 모드는 초당 요청이 미리 설정한 Capacity 를 초과할 경우 해당 요청이 지연되는 Throttle 이 발생된다.
 
-# 일단 써보자
+## 일단 써보자
 
 여기서는 AWS에 로그인하여 Dynamo DB 에 테이블 생성, 생성된 테이블에 데이터 추가 / 읽기 / 삭제 등을 CLI를 통해 수행하는 방법을 기록해본다.
 
@@ -18,11 +18,11 @@ On-Demand 모드는 요청 Capacity당 과금이 책정되는 반면, Provision 
 
 AWS 계정으로 로그인 하여 Dynamo DB 메뉴를 찾는다.
 
-![](dynamodb-start.png)
+![start](dynamodb-start.png)
 
 선택한 후 화면은 이런 화면이 나온다.
 
-![](dynamodb-landing.png)
+![landing](dynamodb-landing.png)
 
 ## CLI 사용 준비
 
@@ -39,12 +39,14 @@ Command Line 에 아래 내용을 입력해본다.
     ]
 }
 ```
+
 ```zsh
-% aws dynamodb list-tables 
+% aws dynamodb list-tables
 {
     "TableNames": []
 }
 ```
+
 여기까지 된다면 테이블을 생성해볼 준비가 되어있는 것이다.
 그렇지 않다면 아래 링크를 참고한다.
 
@@ -131,6 +133,7 @@ Command Line 에 아래 내용을 입력해본다.
     }
 }
 ```
+
 ```zsh
 % aws dynamodb put-item \
     --table-name MusicCollection \
@@ -147,8 +150,10 @@ Command Line 에 아래 내용을 입력해본다.
     }
 }
 ```
+
 전달되는 데이터에는 key로 사용하기로 한 속성들이 반드시 존재해야 한다. 이런 경우 어떤 key가 문제인지 친절하게 에러메시지에 표시해 준다.
 > Missing the key *Artist* in the item
+
 ```zsh
 % aws dynamodb put-item \
     --table-name MusicCollection \
@@ -161,6 +166,7 @@ Command Line 에 아래 내용을 입력해본다.
 
 An error occurred (ValidationException) when calling the PutItem operation: One or more parameter values were invalid: Missing the key Artist in the item
 ```
+
 ```zsh
 % aws dynamodb put-item \
     --table-name MusicCollection \
@@ -173,7 +179,9 @@ An error occurred (ValidationException) when calling the PutItem operation: One 
 
 An error occurred (ValidationException) when calling the PutItem operation: One or more parameter values were invalid: Missing the key SongTitle in the item
 ```
+
 하지만 key를 제외한 데이터는 처음 테이블 생성시와 무관하게 자유롭게 추가할 수 있다.
+
 ```zsh
 % aws dynamodb put-item \
     --table-name MusicCollection \
@@ -198,6 +206,7 @@ An error occurred (ValidationException) when calling the PutItem operation: One 
 예제에서는 `query` 명령어를 다루고 있다. 이 명령어는 일종의 질의 문법을 제공하는데, [예제](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/SQLtoNoSQL.ReadData.Query.html)들을 읽어보면 간단한 질의문을 만들 수 있고, [심화 버전](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Query.html)에서는 좀더 자세한 질의 문법을 다룬다.
 
 직접 json 내용을 입력하는 대신, `expression-attributes.json` 파일을 통해 값을 CLI로 전달하고 있다.
+
 ```json
 // expression-attributes.json
 {
@@ -289,6 +298,7 @@ An error occurred (ValidationException) when calling the PutItem operation: One 
 ### get-item
 
 `get-item`은 `--key`를 통해 key가 일치하는 데이터를 가져온다.
+
 ```json
 // get-item-key.json
 {
