@@ -1,7 +1,7 @@
 # Dynamo DB
 
 Dynamo DB는 AWS에서 제공하는 No-SQL 데이터베이스 시스템이다.\
-어떤 상황에서도 한자릿수 millisecond의 성능을 보여준다고 광고하고 있다.\
+어떤 상황에서도 한자릿수 millisecond의 성능을 보여준다고 광고하고 있다.
 > Amazon DynamoDB is a key-value and document database that delivers single-digit millisecond performance at any scale.)
 > by [AWS DynamoDB](https://aws.amazon.com/dynamodb/)
 
@@ -9,9 +9,11 @@ On-Demand 모드와 Provision 모드를 지원하는데, 둘의 가장 큰 차�
 On-Demand 모드는 요청 Capacity당 과금이 책정되는 반면, Provision 모드는 미리 설정한 Capacity 기준으로 과금이 된다.\
 이와 관련하여 Provision 모드는 초당 요청이 미리 설정한 Capacity 를 초과할 경우 해당 요청이 지연되는 Throttle 이 발생된다.
 
-## 일단 써보자
+이 문서를 통해 아래 내용을 CLI를 통해 수행하는 방법을 기록하고 싶다.
 
-여기서는 AWS에 로그인하여 Dynamo DB 에 테이블 생성, 생성된 테이블에 데이터 추가 / 읽기 / 삭제 등을 CLI를 통해 수행하는 방법을 기록해본다.
+* Dynamo DB 에 테이블 생성
+* 생성된 테이블에 데이터 추가 / 읽기 / 삭제 및 Throttle 테스트
+* 테이블 삭제
 
 ## Dynamo DB 첫화면 진입
 
@@ -50,8 +52,7 @@ Command Line 에 아래 내용을 입력해본다.
 그렇지 않다면 아래 링크를 참고한다.
 
 * [Installing the AWS CLI version 1](https://docs.aws.amazon.com/cli/latest/userguide/install-cliv1.html)
-
-2019년 12월 기준, version 2 는 아직 안정화 되어있지 않다.
+  * 2019년 12월 기준, version 2 는 아직 안정화 되어있지 않다.
 
 * [Configuring the AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-configure.html#cli-quick-configuration)
 
@@ -211,7 +212,8 @@ An error occurred (ValidationException) when calling the PutItem operation: One 
 ### query
 
 예제에서는 `query` 명령어를 다루고 있다. \
-이 명령어는 일종의 질의 문법을 제공하는데, [예제](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/SQLtoNoSQL.ReadData.Query.html)들을 읽어보면 간단한 질의문을 만들 수 있고, [심화 버전](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Query.html)에서는 좀더 자세한 질의 문법을 다룬다.\
+이 명령어는 일종의 질의 문법을 제공하는데, [예제](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/SQLtoNoSQL.ReadData.Query.html)들을 읽어보면 간단한 질의문을 만들 수 있고, \
+[심화 버전](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Query.html)에서는 좀더 자세한 질의 문법을 다룬다.\
 직접 json 내용을 입력하는 대신, `expression-attributes.json` 파일을 통해 값을 CLI로 전달하고 있다.
 
 ```json
