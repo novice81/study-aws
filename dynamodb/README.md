@@ -360,6 +360,65 @@ An error occurred (ValidationException) when calling the PutItem operation: One 
 }
 ```
 
+## Throttle 확인
+
+이미 작성된 `looptest.sh` 파일을 통해 throttle을 강제로 발생시켜볼 수 있다.
+
+```zsh
+bash ./looptest.sh {1001..1100} &
+bash ./looptest.sh {1101..1200} &
+bash ./looptest.sh {1201..1300} &
+bash ./looptest.sh {1301..1400} &
+bash ./looptest.sh {1401..1500} &
+bash ./looptest.sh {1501..1600} &
+bash ./looptest.sh {1601..1700} &
+bash ./looptest.sh {1701..1800} &
+bash ./looptest.sh {1801..1900} &
+bash ./looptest.sh {1901..2000} &
+```
+
+### 실행중인 `looptest.sh`
+
+```zsh
+done -  1798
+begin -  1799
+{
+    "ConsumedCapacity": {
+        "TableName": "MusicCollection",
+        "CapacityUnits": 1.0
+    }
+}
+{
+    "ConsumedCapacity": {
+        "TableName": "MusicCollection",
+        "CapacityUnits": 1.0
+    }
+}
+done -  1496
+begin -  1497
+done -  1695
+begin -  1696
+{
+    "ConsumedCapacity": {
+        "TableName": "MusicCollection",
+        "CapacityUnits": 1.0
+    }
+}
+done -  1396
+begin -  1397
+{
+    "ConsumedCapacity": {
+        "TableName": "MusicCollection",
+        "CapacityUnits": 1.0
+    }
+}
+done -  1799
+```
+
+### AWS Console의 Metrics 화면
+
+![throttled](dynamodb-throttled.png)
+
 ## 테이블 삭제
 
 `delete-table`을 통해 테이블을 삭제할 수 있다.
