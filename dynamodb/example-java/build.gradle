@@ -35,4 +35,9 @@ dependencies {
     // tag::tests[]
     implementation("org.springframework.boot:spring-boot-starter-test")
     // end::tests[]
+
+    implementation("com.google.guava:guava:28.2-jre")
+    testImplementation("com.google.truth:truth:1.0")
+    implementation platform("software.amazon.awssdk:bom:2.5.29")
+    implementation("software.amazon.awssdk:dynamodb")
 }
