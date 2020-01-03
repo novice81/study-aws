@@ -4,18 +4,36 @@ Java example based on Spring Boot.
 
 ## Run Server
 
+### With Gradle
+
 ```zsh
-/example-java % gradle bootRun
+# in the example-java directory
+% gradle bootRun
 ```
 
-## Music Collection List
+### With jar
+
+```zsh
+% java -jar dynamodb-sample-0.1.0.jar
+```
+
+#### In the EC2 instance
+
+This allows the app to use the `InstanceProfileCredentialsProvider`.
+  Or use the `ProfileCredentialsProvider` with the profile name `dynamodb`.
+
+```zsh
+% java -jar -Dspring.profiles.active=stage dynamodb-sample-0.1.0.jar
+```
+
+## Scan MusicCollection table
 
 ```zsh
 % curl localhost:8080/music/collections
 [{"artist":"John Mayer","songTitle":"Carry Me Away"}]
 ```
 
-## Put Music Item
+## Put MusicCollection item
 
 ```zsh
 % curl -X POST \
