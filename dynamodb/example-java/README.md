@@ -23,7 +23,7 @@ This allows the app to use the `InstanceProfileCredentialsProvider`.
   Or use the `ProfileCredentialsProvider` with the profile name `dynamodb`.
 
 ```zsh
-% java -jar -Dspring.profiles.active=stage dynamodb-sample-0.1.0.jar
+% java -jar dynamodb-sample-0.1.0.jar --server.port=$NOVICE_SERVICE_PORT --spring.profiles.active=stage
 ```
 
 ## Scan MusicCollection table
