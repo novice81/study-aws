@@ -303,9 +303,11 @@ Resolving Dependencies
 ---> Package amazon-ssm-agent.x86_64 0:2.3.662.0-1.amzn2 will be updated
 ---> Package amazon-ssm-agent.x86_64 0:2.3.714.0-1.amzn2 will be an update
 ...
+```
 
 Java Runtime을 설치하는데, Amazon Correto를 이용해보자.
 
+```bash
 $ sudo yum install java
 ...
 ---> Package java-11-amazon-corretto.x86_64 1:11.0.5+10-1.amzn2 will be installed
