@@ -2,6 +2,8 @@
 
 Java example based on Spring Boot.
 
+Referred the [Spring Boot Guide](https://github.com/spring-guides/gs-spring-boot).
+
 ## Run Server
 
 ### With Gradle
