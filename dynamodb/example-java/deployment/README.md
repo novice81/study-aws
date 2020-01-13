@@ -349,9 +349,160 @@ $ java -jar dynamodb-sample-0.1.0.jar --spring.profiles.active=stage --server.po
 [{"artist":"John Mayer","songTitle":"Carry Me Away"}]
 ```
 
+## Register the instance under the Domain Name
+
+EC2가 생성되며 자동으로 등록된 Public DNS는 그 자체로 접근이 가능하나,\
+원활한 서비스를 위해 도메인 이름 아래 등록하여 사용한다.
+
+도메인을 등록하는 절차는 [AWS에서 제공하는 간단한 문서](https://aws.amazon.com/premiumsupport/knowledge-center/simple-resource-record-route53-cli/)를 통해 진행했다.
+
+편의를 위해 Route53을 통해 도메인을 미리 구매했다.\
+CLI 실행에 사용하는 `ec2-user` profile은 IAM을 통해 Route53관련 권한을 부여받은 상태이다.
+
+### Hosted Zone 확인
+
+Route53에 도메인 이름을 생성하면 Hosted Zone ID가 부여된다.
+
+확보해놓은 도메인 정보에 CLI로 변경을 할때 Hosted Zone ID가 필요하다.
+
+```zsh
+% NOVICE_HOSTED_ZONE_ID=$(aws route53 list-hosted-zones --profile ec2-user | jq -r '.HostedZones[0].Id' | cut -d '/' -f3)
+% NOVICE_HOSTED_DOMAIN_NAME=$(aws route53 list-hosted-zones --profile ec2-user | jq -r '.HostedZones[0].Name')
+
+% echo Hosted Zone ID : $NOVICE_HOSTED_ZONE_ID, Domain Name : $NOVICE_HOSTED_DOMAIN_NAME
+Hosted Zone ID : xxxxxxxxxxxxxx, Domain Name : xxxxxxxxxxxxxx
+```
+
+### Domain Name에 EC2 Instance 등록
+
+스크립트 실행의 편의를 위해 `NOVICE_DOMAIN_NAME`에 등록한 도멘인 이름을 먼저 설정해놓자.\
+(`NOVICE_HOSTED_DOMAIN_NAME`와 같은것 처럼 느껴지겠지만 다른 값이다.)
+
+```zsh
+% NOVICE_DOMAIN_NAME=xxxxxxxxxxxxxxx.net
+```
+
+Route53의 명령은 `change-batch` 인자로 json형식의 값이 필요하다.\
+`CREATE`와 `DELETE`용 모두를 설정해둔다.
+
+```zsh
+# Set the json format batch context to create
+% NOVICE_CHANGE_BATCH_CREATE='{
+    "Comment": "Devjog EC2 instance register",
+    "Changes": [
+        {
+            "Action": "CREATE",
+            "ResourceRecordSet": {
+                "Name": "devjog.'$NOVICE_DOMAIN_NAME'",
+                "Type": "CNAME",
+                "TTL": 120,
+                "ResourceRecords": [
+                    {
+                        "Value": "'"$NOVICE_PUBLIC_DNS_NAME"'"
+                    }
+                ]
+            }
+        }
+    ]
+}'
+
+# Set the json format batch context to delete
+% NOVICE_CHANGE_BATCH_DELETE=$(echo $NOVICE_CHANGE_BATCH_CREATE | sed 's/\"CREATE\"/\"DELETE\"/g')
+```
+
+`CREATE`를 하면서 `ChangeInfo.Id`를 저장해 놓는다.\
+이렇게 저장해둔 값을 도메인 정보 전파가 완료됐는지 확인하는데 사용한다.
+
+```zsh
+% NOVICE_DOMAIN_NAME_CHANGE_ID=$(aws route53 change-resource-record-sets --profile ec2-user \
+    --hosted-zone-id $NOVICE_HOSTED_ZONE_ID \
+    --change-batch $NOVICE_CHANGE_BATCH_CREATE | jq -r '.ChangeInfo.Id')
+
+% echo $NOVICE_DOMAIN_NAME_CHANGE_ID
+/change/xxxxxxxxxxxxxx
+```
+
+아래와 같이 `INSYNC` 상태가 되면 변경이 성공적으로 전파된 것이다.
+
+```zsh
+% aws route53 get-change --profile ec2-user \
+    --id $NOVICE_DOMAIN_NAME_CHANGE_ID
+{
+    "ChangeInfo": {
+        "Id": "/change/xxxxxxxxxxxxxx",
+        "Status": "INSYNC",
+        "SubmittedAt": "2020-01-13T20:08:17.722Z",
+        "Comment": "Devjog EC2 instance register"
+    }
+}
+```
+
+`nslookup` 명령어를 통해 등록한 도메인 이름의 동작 여부를 확인한다.
+
+```zsh
+% nslookup devjog.$NOVICE_DOMAIN_NAME
+Server:         192.168.100.1
+Address:        192.168.100.1#53
+
+Non-authoritative answer:
+devjog.xxxxxxxxxxxxxxx.net      canonical name = ec2-xxx-xxx-xxx-xxx.eu-north-1.compute.amazonaws.com.
+Name:   ec2-xxx-xxx-xxx-xxx.eu-north-1.compute.amazonaws.com
+Address: xxx.xxx.xxx.xxx
+```
+
+### Domain Name을 통한 API 호출 확인
+
+이제 EC2에 등록된 Public DNS 이름이 아닌, 내가 만든 도메인 이름으로 서버에 접근이 가능하다.
+
+```zsh
+% curl devjog.$NOVICE_DOMAIN_NAME:$NOVICE_SERVICE_OPEN_PORT/system/tables
+["MusicCollection"]
+
+% curl devjog.$NOVICE_DOMAIN_NAME:$NOVICE_SERVICE_OPEN_PORT/music/collections
+[{"artist":"John Mayer","songTitle":"Carry Me Away"}]
+```
+
+이제 이 URL을 다른 친구에게 보내 확인을 요청해보자.
+
+```zsh
+% echo http://devjog.$NOVICE_DOMAIN_NAME:$NOVICE_SERVICE_OPEN_PORT/music/collections
+http://devjog.xxxxxx:xxxx/music/collections
+```
+
 ## Terminate EC2 Instance
 
-테스트를 마친 후 EC2 Instance를 완전히 종료한다.
+테스트를 마친 후 테스트 환경에서 사용했던 자원들을 정리한다.
+
+Domain Name 아래 등록했던 CNAME 정보를 삭제한다.
+
+```zsh
+% aws route53 change-resource-record-sets --profile ec2-user \
+    --hosted-zone-id $NOVICE_HOSTED_ZONE_ID \
+    --change-batch $NOVICE_CHANGE_BATCH_DELETE
+{
+    "ChangeInfo": {
+        "Id": "/change/xxxxxxxxxxxxxx",
+        "Status": "PENDING",
+        "SubmittedAt": "2020-01-13T20:31:39.806Z",
+        "Comment": "Devjog EC2 instance register"
+    }
+}
+```
+
+잠시 후 확인하면 `PENDING`상태가 `INSYNC`상태로 변한것을 확인할 수 있다.
+
+```zsh
+% aws route53 get-change --profile ec2-user \
+    --id $NOVICE_DOMAIN_NAME_CHANGE_ID
+{
+    "ChangeInfo": {
+        "Id": "/change/xxxxxxxxxxxxxx",
+        "Status": "INSYNC",
+        "SubmittedAt": "2020-01-13T20:08:17.722Z",
+        "Comment": "Devjog EC2 instance register"
+    }
+}
+```
 
 EC2 Instance를 Terminate 한다.
 
@@ -377,6 +528,6 @@ KeyPair도 삭제한다.
 ## 정리
 
 EC2 Instance를 AWS CLI를 통해 생성하고, 서버 Application을 배포하는 방법을 기록해봤다.\
-다른 도구들로 간편히 배포하는 방법도 유용하겠지만, 지금은 EC2 Instance와 관련된 다른 내용들이 어떤 것들이 있는지 알고 싶었다.
+다른 도구들로 간편히 배포하는 방법도 유용하겠지만, 지금은 EC2 Instance와 관련된 다른 내용들이 어떤 것들이 있는지 좀더 하나씩 짚어보기 위해 불편하지만 CLI를 이용해보았다.
 
 추후 Terraform 등을 이용한 배포나, Serverless 형태의 배포도 이어서 다뤄볼 예정이다.
