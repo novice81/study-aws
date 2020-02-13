@@ -106,3 +106,5 @@ An error occurred (AccessDenied) when calling the ListBuckets operation: Access 
 ```
 
 이제 우리가 설정한 `iam-user`라는 Profile을 이용해 다른 작업을 해볼 준비가 됐다.
+
+[IAM 문서 바로가기](../iam/README.md)
