@@ -197,7 +197,7 @@ EC2 Instance에 별도의 인증정보를 설정하지 않고 AWS의 기능들�
     --instance-type t3.nano \
     --key-name $NOVICE_KEY_PAIR_NAME \
     --security-groups $NOVICE_SG_GROUP_NAME \
-    --iam-instance-profile Name=ec2-dynamo-user
+    --iam-instance-profile Name=ec2-dynamodb-instance-profile
 {
     "Groups": [],
     "Instances": [
