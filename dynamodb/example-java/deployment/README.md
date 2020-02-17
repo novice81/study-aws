@@ -521,7 +521,7 @@ EC2 Instance에 할당했던 Security Group도 삭제한다.
 KeyPair도 삭제한다.
 
 ```zsh
-% aws ec2 delete-key-pairs --profile ec2-user \
+% aws ec2 delete-key-pair --profile ec2-user \
     --key-name $NOVICE_KEY_PAIR_NAME
 ```
 
